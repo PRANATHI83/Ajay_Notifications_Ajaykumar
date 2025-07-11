@@ -50,6 +50,7 @@ const corsOptions = {
         'http://3.88.203.125:7102', // HR Notification Portal
         'http://3.88.203.125:7103', // Employee Notification Portal
         'http://13.233.136.229:7103', // ✅ Added actual frontend origin
+        'http://13.233.136.229:7102',
         'http://localhost:7102',
         'http://localhost:7103',
     ],
