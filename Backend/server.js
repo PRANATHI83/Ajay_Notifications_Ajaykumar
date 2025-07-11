@@ -6,7 +6,7 @@ require('dotenv').config();
 console.log('Starting server setup...');
 
 const app = express();
-const port = process.env.PORT || 3601;
+const port = process.env.PORT || 3429;
 const host = '0.0.0.0'; // Bind to all interfaces
 
 // Database connection pool
@@ -14,7 +14,7 @@ const pool = new Pool({
     user: process.env.PG_USER || 'postgres',
     host: process.env.PG_HOST || 'postgres',
     database: process.env.PG_DATABASE || 'new_employee_db',
-    password: process.env.PG_PASSWORD || 'admin123',
+    password: process.env.PG_PASSWORD || 'admin234',
     port: process.env.PG_PORT || 5432,
 });
 
@@ -162,7 +162,7 @@ async function startServer() {
         client.release();
         await createTables();
         app.listen(port, host, () => {
-            console.log(`Server running on http://${host}:${port} (accessible at http://3.88.203.125:${port})`);
+            console.log(`Server running on http://${host}:${port} (accessible at http://13.233.136.229:${port})`);
         });
     } catch (error) {
         console.error('Error starting server:', error.message, error.stack);
