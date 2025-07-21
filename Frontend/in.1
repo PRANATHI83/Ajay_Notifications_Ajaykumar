@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -118,7 +117,7 @@
 
         .container {
             width: 100%;
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
         }
 
@@ -177,15 +176,9 @@
             transition: var(--transition);
             background: var(--gradient-emerald);
             color: white;
-            width: 100%;
         }
 
-        .btn:disabled {
-            background: var(--gray);
-            cursor: not-allowed;
-        }
-
-        .btn:hover:not(:disabled) {
+        .btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
         }
@@ -238,6 +231,16 @@
             margin-bottom: 1rem;
         }
 
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 10px;
+            }
+
+            .main-content {
+                padding: 1.5rem;
+            }
+        }
+
         @keyframes fadeIn {
             from { opacity: 0; }
             to { opacity: 1; }
@@ -246,152 +249,6 @@
         @keyframes slideIn {
             from { transform: translateY(-20px); opacity: 0; }
             to { transform: translateY(0); opacity: 1; }
-        }
-
-        @media (max-width: 1024px) {
-            .container {
-                max-width: 800px;
-            }
-
-            .main-content {
-                padding: 1.5rem;
-            }
-
-            .form-container {
-                max-width: 100%;
-            }
-
-            header {
-                height: 120px;
-            }
-
-            .circle {
-                width: 150px;
-                height: 150px;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .container {
-                padding: 0 15px;
-            }
-
-            .main-content {
-                padding: 1rem;
-            }
-
-            .form-group {
-                margin-bottom: 1rem;
-            }
-
-            input {
-                font-size: 0.9rem;
-            }
-
-            .btn {
-                font-size: 0.9rem;
-                padding: 0.6rem 1.2rem;
-            }
-
-            .notification-item {
-                padding: 1rem;
-            }
-
-            header {
-                height: 100px;
-            }
-
-            header h1 {
-                font-size: 1.8rem;
-            }
-
-            header p {
-                font-size: 0.9rem;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .container {
-                padding: 0 10px;
-            }
-
-            .form-group {
-                margin-bottom: 0.75rem;
-            }
-
-            input {
-                font-size: 0.85rem;
-                padding: 0.6rem 0.8rem;
-            }
-
-            .btn {
-                font-size: 0.85rem;
-            }
-
-            .notification-item h3 {
-                font-size: 1rem;
-            }
-
-            .notification-item p {
-                font-size: 0.9rem;
-            }
-
-            .notification-item .timestamp {
-                font-size: 0.75rem;
-            }
-
-            header {
-                height: 80px;
-            }
-
-            header h1 {
-                font-size: 1.5rem;
-            }
-
-            header p {
-                font-size: 0.8rem;
-                margin-top: 5px;
-            }
-
-            .circle {
-                width: 100px;
-                height: 100px;
-            }
-        }
-
-        @media (max-width: 360px) {
-            .container {
-                padding: 0 5px;
-            }
-
-            .main-content {
-                padding: 0.8rem;
-            }
-
-            input {
-                font-size: 0.8rem;
-            }
-
-            .btn {
-                font-size: 0.8rem;
-                padding: 0.5rem 1rem;
-            }
-
-            .notification-item {
-                padding: 0.8rem;
-            }
-
-            .notification-item h3 {
-                font-size: 0.9rem;
-            }
-
-            .notification-item p {
-                font-size: 0.8rem;
-            }
-
-            .no-data img {
-                width: 100px;
-            }
         }
     </style>
 </head>
@@ -419,9 +276,9 @@
                         pattern="^ATS0(?!000)[0-9]{3}$"
                         title="Employee ID must be ATS0xxx (not ATS0000)"
                     >
-                    <p class="error-message" id="employeeIdError">Invalid employee ID format (e.g., ATS0123)</p>
+                    <p class="error-message" id="employeeIdError">Invalid employee ID format</p>
                 </div>
-                <button class="btn" id="refreshBtn" disabled onclick="fetchNotifications()"><i class="fas fa-sync-alt"></i> Refresh</button>
+                <button class="btn" onclick="fetchNotifications()"><i class="fas fa-search"></i> View Notifications</button>
             </div>
             <div class="notifications-container">
                 <h2>Notifications</h2>
@@ -431,37 +288,26 @@
     </div>
 
     <script>
-        const BASE_URL = 'http://52.66.53.97:3429'; // For production
+        const BASE_URL = 'http://13.233.136.229:3429'; // For production
         // const BASE_URL = 'http://localhost:3429'; // For local testing
 
         document.addEventListener('DOMContentLoaded', () => {
             const employeeIdInput = document.getElementById('employeeId');
-            const refreshBtn = document.getElementById('refreshBtn');
             const notificationsList = document.getElementById('notificationsList');
-            let debounceTimer;
 
             setupValidation('employeeId', /^ATS0(?!000)[0-9]{3}$/, 'employeeIdError', 'Invalid employee ID format (e.g., ATS0123)');
 
-            employeeIdInput.addEventListener('input', () => {
-                clearTimeout(debounceTimer);
+            async function fetchNotifications() {
                 const employeeId = employeeIdInput.value.trim();
-                const isValid = /^ATS0(?!000)[0-9]{3}$/.test(employeeId);
-                refreshBtn.disabled = !isValid;
-
-                if (isValid) {
-                    debounceTimer = setTimeout(() => {
-                        fetchNotifications(employeeId);
-                    }, 300);
-                } else {
-                    notificationsList.innerHTML = '';
-                }
-            });
-
-            async function fetchNotifications(empId) {
                 const errorElement = document.getElementById('employeeIdError');
 
+                if (!/^ATS0(?!000)[0-9]{3}$/.test(employeeId)) {
+                    errorElement.style.display = 'block';
+                    return;
+                }
+
                 try {
-                    const response = await fetch(`${BASE_URL}/api/notifications/${empId}`);
+                    const response = await fetch(`${BASE_URL}/api/notifications/${employeeId}`);
                     if (!response.ok) {
                         const error = await response.json();
                         throw new Error(error.error || 'Failed to fetch notifications');
@@ -517,12 +363,7 @@
                 });
             }
 
-            window.fetchNotifications = () => {
-                const employeeId = employeeIdInput.value.trim();
-                if (/^ATS0(?!000)[0-9]{3}$/.test(employeeId)) {
-                    fetchNotifications(employeeId);
-                }
-            };
+            window.fetchNotifications = fetchNotifications;
         });
     </script>
 </body>
